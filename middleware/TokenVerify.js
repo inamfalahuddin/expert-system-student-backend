@@ -6,12 +6,12 @@ const TokenVerify = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token === undefined || token === "") {
-    return response(res, 403, "Forbiden! Pastikan anda sudah memiliki token");
+    return response(res, 403, "Forbiden! No token");
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return response(res, 403, "Token tidak valid");
+      return response(res, 403, "Invalid token");
     }
 
     req.username = decoded.username;

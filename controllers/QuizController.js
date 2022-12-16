@@ -26,18 +26,23 @@ const questions = async (req, res) => {
 };
 
 const getAnswer = async (req, res) => {
-  console.log(req.query);
+  const { id } = req.query;
+
   try {
     if (Object.keys(req.query).length === 0) {
       const answers = await Konsultasi.findAll({});
       return response(res, 200, "Success", { answers });
-    } else {
-      const answers = await Konsultasi.findOne(
-        {},
-        { where: { id_user: req.query.id } }
-      );
-      return response(res, 200, "Success", { answers });
     }
+
+    const currentSesiByUser = await Konsultasi.findAll({
+      attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
+      where: { id_user: id },
+      raw: true,
+    });
+    const answers = await Konsultasi.findOne({
+      where: { id_user: id, sesi: currentSesiByUser[0].max },
+    });
+    return response(res, 200, "Success", { answers });
   } catch (err) {
     console.log(err);
     response(res, 500, "Maaf! Terjadi kesalahan pada server");

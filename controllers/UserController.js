@@ -47,51 +47,50 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
-
   try {
-    const user = await Users.findOne({ where: { username } });
-    const match = await bcrypt.compare(password, user.password);
-    console.log(user)
+    const user = await Users.findOne({
+      where: { username: req.body.username },
+    });
+
     if (user === null) {
-      response(res, 404, "Username tidak terdaftar");
-    } else {
-      if (!match) {
-        response(res, 404, "Passsword salah");
-      } else {
-        const { id, nama_user, username } = user;
-
-        const accessToken = jwt.sign(
-          { id, nama_user, username },
-          process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "300s" }
-        );
-        const refreshToken = jwt.sign(
-          { id, nama_user, username },
-          process.env.REFRESH_TOKEN_SECRET,
-          { expiresIn: "1d" }
-        );
-
-        try {
-          await Users.update(
-            { refresh_token: refreshToken },
-            { where: { username } }
-          );
-        } catch (err) {
-          console.log(err);
-        }
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          maxAge: 24 * 60 * 60 * 1000,
-        });
-        return response(res, 200, "Success", { accessToken });
-      }
+      return response(res, 404, "Username tidak terdaftar");
     }
-    return response(res, 400, "Failed");
+
+    const match = await bcrypt.compare(req.body.password, user.password);
+    if (!match) {
+      return response(res, 404, "Passsword salah");
+    }
+
+    const { id, nama_user, username } = user;
+    const accessToken = jwt.sign(
+      { id, nama_user, username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "300s" }
+    );
+    const refreshToken = jwt.sign(
+      { id, nama_user, username },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    try {
+      await Users.update(
+        { refresh_token: refreshToken },
+        { where: { username } }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return response(res, 200, "Success", { accessToken });
   } catch (err) {
     console.log(err);
   }
+  return response(res, 503, "Server Error");
 };
 
 const logout = async (req, res) => {
@@ -111,46 +110,47 @@ const logout = async (req, res) => {
 const stress = async (req, res) => {
   const { id, session } = req.query;
 
-  console.log(id == "");
+  try {
+    if (id !== undefined) {
+      const result = await KonsultasiHasilDetail.findAll({
+        where: { id_user: id },
+      });
 
-  if (id !== undefined) {
-    const result = await KonsultasiHasilDetail.findAll({
-      where: { id_user: id },
-    });
+      const currentSesiByUser = await KonsultasiHasilDetail.findAll({
+        attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
+        where: { id_user: id },
+        raw: true,
+      });
 
-    const currentSesiByUser = await KonsultasiHasilDetail.findAll({
-      attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
-      where: { id_user: id },
-      raw: true,
-    });
+      if (result.length > 0) {
+        if (session !== undefined) {
+          if (session == 0) {
+            const result = await KonsultasiHasilDetail.findOne({
+              where: { id_user: id, sesi: currentSesiByUser[0].max },
+            });
+            return response(res, 200, "Berhasil", { resultOfStress: result });
+          }
 
-    if (result.length > 0) {
-      if (session !== undefined) {
-        if (session == 0) {
-          const result = await KonsultasiHasilDetail.findOne({
-            where: { id_user: id, sesi: currentSesiByUser[0].max },
-          });
-          return response(res, 200, "Berhasil", { resultOfStress: result });
+          if (session > currentSesiByUser[0].max) {
+            return response(res, 404, "Tidak ada data");
+          }
+
+          if (session > 0) {
+            const result = await KonsultasiHasilDetail.findOne({
+              where: { id_user: id, sesi: session },
+            });
+            return response(res, 200, "Berhasil", { resultOfStress: result });
+          }
         }
-
-        if (session > currentSesiByUser[0].max) {
-          return response(res, 404, "Tidak ada data");
-        }
-
-        if (session > 0) {
-          const result = await KonsultasiHasilDetail.findOne({
-            where: { id_user: id, sesi: session },
-          });
-          return response(res, 200, "Berhasil", { resultOfStress: result });
-        }
+        return response(res, 200, "Berhasil", { resultOfStress: result });
       }
-
-      return response(res, 200, "Berhasil", { resultOfStress: result });
+      return response(res, 404, "Tidak ada data");
     }
-    return response(res, 404, "Tidak ada data");
+    // return response(res, 404, "Tidak ada data");
+  } catch (err) {
+    return response(res, 200, "Server Error");
   }
 
-  console.log(id);
   // if (id != undefined || session != undefined) {
   //   const currentSesiByUser = await KonsultasiHasilDetail.findAll({
   //     attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
