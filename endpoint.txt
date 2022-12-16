@@ -1,0 +1,44 @@
+http://localhost:5000/users
+http://localhost:5000/user/register
+http://localhost:5000/user/login
+http://localhost:5000/user/logout
+http://localhost:5000/user/token
+
+http://localhost:5000/quiz/questions
+
+POST
+http://localhost:5000/quiz/answers
+{
+    "username": "inam@gmail.com",
+    "answers": {
+        "P01": 1,
+        "P02": 3,
+        "P03": 3,
+        "P04": 2,
+        "P05": 2,
+        "P06": 1,
+        "P07": 1,
+        "P08": 2,
+        "P09": 1,
+        "P10": 1,
+        "P11": 1,
+        "P12": 1
+    }
+}
+
+[1,1,1,2,1,1,2,2,2,3,3,2]
+
+[
+    {"id_pernyataan": "P01", "value": 1},
+    {"id_pernyataan": "P02", "value": 2},
+    {"id_pernyataan": "P03", "value": 3},
+    {"id_pernyataan": "P04", "value": 2},
+    {"id_pernyataan": "P05", "value": 2},
+    {"id_pernyataan": "P06", "value": 2},
+    {"id_pernyataan": "P07", "value": 2},
+    {"id_pernyataan": "P08", "value": 1},
+    {"id_pernyataan": "P09", "value": 2},
+    {"id_pernyataan": "P10", "value": 1},
+    {"id_pernyataan": "P11", "value": 2},
+    {"id_pernyataan": "P12", "value": 1}
+]
