@@ -81,6 +81,7 @@ const answers = async (req, res) => {
     console.log(err);
     response(res, 500, "Terjadi kesalahan pada server");
   }
+      response(res, 404, "Not Found");
 };
 
 const _answerByDimensi = (questionsByDimensi, answers) => {

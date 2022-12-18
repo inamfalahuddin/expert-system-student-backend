@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 
 const db = new Sequelize("expert_system", "root", "", {
-  host: "localhost",
+  host: "192.168.18.253",
   dialect: "mysql",
 });
 

@@ -23,7 +23,7 @@ const RefreshToken = async (req, res) => {
         const accessToken = jwt.sign(
           { id, nama_user, username },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "2000s" }
+          { expiresIn: "5s" }
         );
 
         response(res, 200, "Success", { accessToken });

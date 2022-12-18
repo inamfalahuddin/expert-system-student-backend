@@ -9,7 +9,9 @@ const app = express();
 
 dotenv.config();
 
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+var allowedOrigins = ['http://localhost:3000', 'http://192.168.18.181'];
+
+app.use(cors({credentials: true, origin: 'http://192.168.18.253:3000'}))
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(router);

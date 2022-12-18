@@ -36,14 +36,14 @@ const register = async (req, res) => {
         user_level: "user",
       });
 
-      response(res, 200, "Register berhasil");
+      return response(res, 200, "Register berhasil");
     } else {
-      response(res, 400, "Username sudah digunakan");
+      return response(res, 400, "Username sudah digunakan");
     }
   } catch (err) {
-    console.log(err);
-    response(res, 400, "Register gagal");
+    return response(res, 400, "Register gagal");
   }
+  return response(res, 500, "Server error gais");
 };
 
 const login = async (req, res) => {
@@ -83,8 +83,9 @@ const login = async (req, res) => {
     }
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      httpOnly: false,
       maxAge: 24 * 60 * 60 * 1000,
+      // secure: true
     });
     return response(res, 200, "Success", { accessToken });
   } catch (err) {
@@ -101,6 +102,7 @@ const logout = async (req, res) => {
   const user = await Users.findOne({ where: { refresh_token: refreshToken } });
 
   if (!user) return response(res, 204, "Tidak ada refresh token");
+
   const { username } = user;
   await Users.update({ refresh_token: null }, { where: { username } });
 
