@@ -61,14 +61,14 @@ const login = async (req, res) => {
       return response(res, 404, "Passsword salah");
     }
 
-    const { id, nama_user, username } = user;
+    const { id, nama_user, username, user_level } = user;
     const accessToken = jwt.sign(
-      { id, nama_user, username },
+      { id, nama_user, username, user_level },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "300s" }
     );
     const refreshToken = jwt.sign(
-      { id, nama_user, username },
+      { id, nama_user, username, user_level },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
