@@ -26,7 +26,7 @@ const RefreshToken = async (req, res) => {
           { expiresIn: "5s" }
         );
 
-        response(res, 200, "Success", { accessToken });
+        return response(res, 200, "Success", { accessToken });
       }
     );
   } catch (err) {

@@ -12,10 +12,10 @@ const questions = async (req, res) => {
       attributes: ["id_pernyataan", "pernyataan"],
     });
 
-    response(res, 200, "Success", { questions });
+    return response(res, 200, "Success", { questions });
   } catch (err) {
     console.log(err);
-    response(res, 500, "Maaf terjadi kesalahan silahakan cobalagi nanti");
+    return response(res, 500, "Maaf terjadi kesalahan silahakan cobalagi nanti");
   }
 };
 
@@ -135,10 +135,10 @@ const answers = async (req, res) => {
     // }
 
     // response
-    response(res, 200, "Data berhasil ditambahkan", { alpha: resultOfAlpha });
+    return response(res, 200, "Data berhasil ditambahkan", { alpha: resultOfAlpha });
   } catch (err) {
     console.log(err);
-    response(res, 500, "Terjadi kesalahan pada server");
+    return response(res, 500, "Terjadi kesalahan pada server");
   }
 };
 
@@ -157,7 +157,7 @@ const getAnswer = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    response(res, 500, "Maaf! Terjadi kesalahan pada server");
+    return response(res, 500, "Maaf! Terjadi kesalahan pada server");
   }
 };
 

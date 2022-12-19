@@ -72,16 +72,38 @@ const answers = async (req, res) => {
     const alphaPredikat = aPredikat(a);
     const z = await Z(alphaPredikat);
 
-    _addTableHasil(username, alphaPredikat, z);
+    _addTableHasil(username, a, alphaPredikat, z);
 
     _addTableKonsultasiHasilDetail(username, alphaPredikat, z);
 
-    response(res, 200, "Data berhasil ditambahkan");
+    return response(res, 200, "Data berhasil ditambahkan");
   } catch (err) {
     console.log(err);
-    response(res, 500, "Terjadi kesalahan pada server");
+    return response(res, 500, "Terjadi kesalahan pada server");
   }
-      response(res, 404, "Not Found");
+  return response(res, 404, "Not Found");
+};
+
+const getResult = async (req, res) => {
+  const { id } = req.query;
+  try {
+    const currentSesiByUser = await Hasil.findAll({
+      attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
+      where: { id_user: id },
+      raw: true,
+    });
+
+    const inference = await Hasil.findAll({
+      attributes: ["a", "a_predikat", "z", "sesi"],
+      where: { id_user: id, sesi: currentSesiByUser[0].max },
+    });
+
+    console.log(currentSesiByUser[0]);
+    return response(res, 200, "Ok Berhasil", { inference });
+  } catch (err) {
+    console.log(err);
+  }
+  return response(res, 500, "Server Error");
 };
 
 const _answerByDimensi = (questionsByDimensi, answers) => {
@@ -135,7 +157,7 @@ const _addTableKonsultasi = async (username, answers, questionsByDimensi) => {
   });
 };
 
-const _addTableHasil = async (username, alphaPredikat, z) => {
+const _addTableHasil = async (username, a, alphaPredikat, z) => {
   const count = await Hasil.count();
   const idUser = await Users.findOne({
     attributes: ["id"],
@@ -161,6 +183,7 @@ const _addTableHasil = async (username, alphaPredikat, z) => {
     await Hasil.create({
       id_hasil: idHasil,
       id_user: idUser.id,
+      a: JSON.stringify(a[i]),
       a_predikat: alphaPredikat[i],
       z: z[i],
       sesi: sesi,
@@ -202,4 +225,4 @@ const _addTableKonsultasiHasilDetail = async (username, alphaPredikat, z) => {
   });
 };
 
-module.exports = { questions, answers, getAnswer };
+module.exports = { questions, answers, getAnswer, getResult };

@@ -13,6 +13,9 @@ const Hasil = db.define(
     id_user: {
       type: DataTypes.STRING,
     },
+    a: {
+      type: DataTypes.STRING,
+    },
     a_predikat: {
       type: DataTypes.FLOAT,
     },
