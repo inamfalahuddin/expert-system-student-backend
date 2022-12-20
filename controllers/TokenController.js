@@ -18,7 +18,7 @@ const RefreshToken = async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) return response(res, 403, "Forbidden");
-        const { id, nama_user, username } = user;
+        const { id, nama_user, username, user_level } = user;
 
         const accessToken = jwt.sign(
           { id, nama_user, username, user_level },

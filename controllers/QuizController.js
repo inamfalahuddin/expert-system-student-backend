@@ -18,10 +18,14 @@ const questions = async (req, res) => {
       attributes: ["id_pernyataan", "pernyataan"],
     });
 
-    response(res, 200, "Success", { questions });
+    return response(res, 200, "Success", { questions });
   } catch (err) {
     console.log(err);
-    response(res, 500, "Maaf terjadi kesalahan silahakan cobalagi nanti");
+    return response(
+      res,
+      500,
+      "Maaf terjadi kesalahan silahakan cobalagi nanti"
+    );
   }
 };
 
@@ -45,7 +49,7 @@ const getAnswer = async (req, res) => {
     return response(res, 200, "Success", { answers });
   } catch (err) {
     console.log(err);
-    response(res, 500, "Maaf! Terjadi kesalahan pada server");
+    return response(res, 500, "Maaf! Terjadi kesalahan pada server");
   }
 };
 
@@ -98,13 +102,14 @@ const getResult = async (req, res) => {
       where: { id_user: id, sesi: currentSesiByUser[0].max },
     });
 
-    console.log(currentSesiByUser[0]);
     return response(res, 200, "Ok Berhasil", { inference });
+    console.log(inference)
   } catch (err) {
     console.log(err);
   }
   return response(res, 500, "Server Error");
 };
+
 
 const _answerByDimensi = (questionsByDimensi, answers) => {
   let d1 = 0;

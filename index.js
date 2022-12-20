@@ -9,9 +9,13 @@ const app = express();
 
 dotenv.config();
 
-var allowedOrigins = ['http://localhost:3000', 'http://192.168.18.181'];
-
-app.use(cors({credentials: true, origin: 'http://192.168.18.253:3000', exposedHeaders: ["set-cookie"]}))
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://192.168.18.253:3000",
+    // exposedHeaders: ["set-cookie"],
+  })
+);
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(router);

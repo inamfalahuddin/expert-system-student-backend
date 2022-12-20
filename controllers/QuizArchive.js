@@ -15,7 +15,11 @@ const questions = async (req, res) => {
     return response(res, 200, "Success", { questions });
   } catch (err) {
     console.log(err);
-    return response(res, 500, "Maaf terjadi kesalahan silahakan cobalagi nanti");
+    return response(
+      res,
+      500,
+      "Maaf terjadi kesalahan silahakan cobalagi nanti"
+    );
   }
 };
 
@@ -135,7 +139,9 @@ const answers = async (req, res) => {
     // }
 
     // response
-    return response(res, 200, "Data berhasil ditambahkan", { alpha: resultOfAlpha });
+    return response(res, 200, "Data berhasil ditambahkan", {
+      alpha: resultOfAlpha,
+    });
   } catch (err) {
     console.log(err);
     return response(res, 500, "Terjadi kesalahan pada server");
