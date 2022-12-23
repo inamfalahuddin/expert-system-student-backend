@@ -103,13 +103,11 @@ const getResult = async (req, res) => {
     });
 
     return response(res, 200, "Ok Berhasil", { inference });
-    console.log(inference)
   } catch (err) {
     console.log(err);
   }
   return response(res, 500, "Server Error");
 };
-
 
 const _answerByDimensi = (questionsByDimensi, answers) => {
   let d1 = 0;

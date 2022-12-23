@@ -172,4 +172,46 @@ const stress = async (req, res) => {
   return response(res, 200, "Berhasil", { resultOfStress: result });
 };
 
-module.exports = { getUsers, register, login, logout, stress };
+const deleteUser = async (req, res) => {
+  const checkDataFromDB = await Users.findAll({
+    where: { id: `${req.params.id}` },
+  });
+
+  if (checkDataFromDB.length !== 0) {
+    await Users.destroy({ where: { id: req.params.id } });
+    return response(res, 200, `user ${req.params.id} berhasil dihapus`);
+  }
+  return response(res, 404, `Tidak ada data dengan ID ${req.params.id}`);
+};
+
+const updateUser = async (req, res) => {
+  if (req.params.id) {
+    const checkDataFromDB = await Users.findAll({
+      where: { id: req.params.id },
+    });
+
+    if (checkDataFromDB.length !== 0) {
+      await Users.update(
+        {
+          nama_user: req.body.nama_user,
+          username: req.body.username,
+          user_level: req.body.user_level,
+        },
+        { where: { id: `${req.params.id}` } }
+      );
+      return response(res, 200, `Dimensi ${req.params.id} berhasil diperbarui`);
+    }
+    return response(res, 404, "Not Found");
+  }
+  return response(res, 500, "Server Error");
+};
+
+module.exports = {
+  getUsers,
+  register,
+  login,
+  logout,
+  stress,
+  deleteUser,
+  updateUser,
+};
