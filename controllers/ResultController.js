@@ -3,60 +3,81 @@ const db = require("../config/db");
 const response = require("./response");
 
 const getHasilKonsultasi = async (req, res) => {
-  console.log(req.query.length);
-  if (req.query.id === undefined) {
-    try {
+  try {
+    // if(req.query.recent)
+    if (Object.keys(req.query).length > 0) {
+      if (req.query.id !== undefined) {
+        const result = await db.query(
+          `
+                SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
+                FROM tbl_konsultasi_hasildetail as a
+                LEFT JOIN tbl_users as b ON a.id_user=b.id
+                LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
+                WHERE a.id_user=${req.query.id}
+            `,
+          {
+            type: QueryTypes.SELECT,
+            where: { id_user: `${req.query.id}` },
+          }
+        );
+
+        return response(res, 200, "Success", result);
+      }
+      if (req.query.recent !== undefined) {
+        const result = await db.query(
+          `
+            SELECT  a.id_konsultasi_hasildetail, b.id, b.nama_user, a.z_score_total, max(a.sesi) as sesi, a.id_tingkat_stres
+            FROM tbl_konsultasi_hasildetail as a
+            RIGHT JOIN tbl_users as b ON a.id_user=b.id
+            WHERE a.id_konsultasi_hasildetail IS NOT NULL
+            GROUP BY b.createdAt DESC
+            LIMIT ${Number(req.query.recent)}
+          `,
+          {
+            type: QueryTypes.SELECT,
+            where: { id_user: `${req.query.id}` },
+          }
+        );
+
+        return response(res, 200, "Success", result);
+      }
+    }
+
+    if (req.query.limit !== undefined) {
       const result = await db.query(
         `
-            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
-            FROM tbl_konsultasi_hasildetail as a
-            LEFT JOIN tbl_users as b ON a.id_user=b.id
-            LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
+          SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, b.username, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
+          FROM tbl_konsultasi_hasildetail as a
+          LEFT JOIN tbl_users as b ON a.id_user=b.id
+          LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
+          ORDER BY a.createdAt DESC
+          LIMIT ${Number(req.query.limit)}
         `,
         {
           type: QueryTypes.SELECT,
+          where: { id_user: `${req.query.id}` },
         }
       );
 
       return response(res, 200, "Success", result);
-    } catch (err) {
-      console.log(err);
-      return response(
-        res,
-        500,
-        "Maaf terjadi kesalahan silahakan cobalagi nanti"
-      );
     }
-  }
 
-  try {
-    console.log(req.query.id);
     const result = await db.query(
       `
-            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
-            FROM tbl_konsultasi_hasildetail as a
-            LEFT JOIN tbl_users as b ON a.id_user=b.id
-            LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
-            WHERE a.id_user=${req.query.id}
-        `,
+          SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
+          FROM tbl_konsultasi_hasildetail as a
+          LEFT JOIN tbl_users as b ON a.id_user=b.id
+          LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
+      `,
       {
         type: QueryTypes.SELECT,
-        where: { id_user: `${req.query.id}` },
       }
     );
 
-    if (result.length > 0) {
-      return response(res, 200, "Success", result);
-    }
-
-    return response(res, 404, "Not Found");
+    return response(res, 200, "Success", result);
   } catch (err) {
     console.log(err);
-    return response(
-      res,
-      500,
-      "Maaf terjadi kesalahan silahakan cobalagi nanti"
-    );
+    return response(res, 500, "Internal Server Error");
   }
 };
 

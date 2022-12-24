@@ -7,13 +7,26 @@ const response = require("./response");
 
 const getUsers = async (req, res) => {
   try {
+    if (req.query.recent === undefined) {
+      const users = await Users.findAll({
+        attributes: ["id", "nama_user", "username", "user_level"],
+      });
+      return response(res, 200, "Success", users);
+    }
+
     const users = await Users.findAll({
       attributes: ["id", "nama_user", "username", "user_level"],
+      order: [["createdAt", "DESC"]],
+      limit: Number(req.query.recent),
     });
-    response(res, 200, "Success", users);
+    return response(res, 200, "Success", users);
   } catch (err) {
     console.log(err);
-    response(res, 500, "Maaf terjadi kesalahan silahakan cobalagi nanti");
+    return response(
+      res,
+      500,
+      "Maaf terjadi kesalahan silahakan cobalagi nanti"
+    );
   }
 };
 
@@ -22,7 +35,16 @@ const register = async (req, res) => {
 
   const salt = await bcrypt.genSalt();
   const hashPassword = await bcrypt.hash(password, salt);
-  const idUser = `201110${Math.ceil(Math.random() * 1000)}`;
+  // const idUser = `201110${Math.ceil(Math.random() * 1000)}`;
+  const count = await Users.count();
+  let idUser =
+    (count + 1).toString().length <= 1
+      ? `20111000${count + 1}`
+      : (count + 1).toString().length <= 2
+      ? `2011100${count + 1}`
+      : (count + 1).toString().length <= 3
+      ? `201110${count + 1}`
+      : `20111${count + 1}`;
 
   try {
     const user = await Users.findOne({ where: { username } });
