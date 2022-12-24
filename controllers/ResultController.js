@@ -8,7 +8,7 @@ const getHasilKonsultasi = async (req, res) => {
     try {
       const result = await db.query(
         `
-            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.tingkat_stres
+            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
             FROM tbl_konsultasi_hasildetail as a
             LEFT JOIN tbl_users as b ON a.id_user=b.id
             LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
@@ -33,7 +33,7 @@ const getHasilKonsultasi = async (req, res) => {
     console.log(req.query.id);
     const result = await db.query(
       `
-            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, a.id_tingkat_stres, c.tingkat_stres
+            SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
             FROM tbl_konsultasi_hasildetail as a
             LEFT JOIN tbl_users as b ON a.id_user=b.id
             LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres

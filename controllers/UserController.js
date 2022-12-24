@@ -8,7 +8,7 @@ const response = require("./response");
 const getUsers = async (req, res) => {
   try {
     const users = await Users.findAll({
-      attributes: ["id", "nama_user", "username"],
+      attributes: ["id", "nama_user", "username", "user_level"],
     });
     response(res, 200, "Success", users);
   } catch (err) {

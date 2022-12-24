@@ -35,7 +35,7 @@ const router = express.Router();
 
 // user
 router.get("/", welcome);
-router.get("/users", TokenVerify, getUsers);
+router.get("/users", getUsers); // need token
 router.get("/user/token", RefreshToken);
 router.post("/user/register", register);
 router.post("/user/login", login);

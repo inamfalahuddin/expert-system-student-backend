@@ -13,6 +13,7 @@ const getKonsultasi = async (req, res) => {
         FROM tbl_konsultasi as konsultasi
         INNER JOIN tbl_users as user 
         ON konsultasi.id_user=user.id
+        ORDER BY konsultasi.id_konsultasi
       `,
         {
           type: QueryTypes.SELECT,

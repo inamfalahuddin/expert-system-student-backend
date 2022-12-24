@@ -1,14 +1,25 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { Sequelize } = require("sequelize");
+const { QueryTypes } = require("sequelize");
+const db = require("../config/db");
 const Dimensi = require("../models/DimensiModel");
-const Users = require("../models/UserModel");
 const response = require("./response");
 
 const getDimensi = async (req, res) => {
   if (req.query.id === undefined) {
     try {
-      const dimensi = await Dimensi.findAll({});
+      // const dimensi = await Dimensi.findAll({});
+      const dimensi = await db.query(
+        `
+          SELECT a.id_dimensi, a.nama_dimensi, b.batas_bawah, b.batas_tengah, b.batas_atas
+          FROM tbl_dimensi as a
+          JOIN tbl_keanggotaan as b
+          ON a.id_dimensi=b.id_dimensi
+          ORDER BY a.id_dimensi
+        `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+
       return response(res, 200, "Success", dimensi);
     } catch (err) {
       console.log(err);
