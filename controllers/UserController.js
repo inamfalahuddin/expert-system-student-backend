@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { query } = require("express");
 const jwt = require("jsonwebtoken");
 const { Sequelize } = require("sequelize");
 const { KonsultasiHasilDetail } = require("../models/KonsultasiHasilDetail");
@@ -10,6 +11,7 @@ const getUsers = async (req, res) => {
     if (req.query.recent === undefined) {
       const users = await Users.findAll({
         attributes: ["id", "nama_user", "username", "user_level"],
+        order: [["createdAt", "DESC"]],
       });
       return response(res, 200, "Success", users);
     }
@@ -55,7 +57,7 @@ const register = async (req, res) => {
         nama_user: nama,
         username: username,
         password: hashPassword,
-        user_level: "user",
+        user_level: req.query.level ? req.query.level : "user",
       });
 
       return response(res, 200, "Register berhasil");
@@ -87,7 +89,7 @@ const login = async (req, res) => {
     const accessToken = jwt.sign(
       { id, nama_user, username, user_level },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "300s" }
+      { expiresIn: "50s" }
     );
     const refreshToken = jwt.sign(
       { id, nama_user, username, user_level },
