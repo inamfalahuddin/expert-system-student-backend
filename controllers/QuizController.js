@@ -89,13 +89,21 @@ const answers = async (req, res) => {
 };
 
 const getResult = async (req, res) => {
-  const { id } = req.query;
+  const { id, sesi } = req.query;
   try {
     const currentSesiByUser = await Hasil.findAll({
       attributes: [[Sequelize.fn("max", Sequelize.col("sesi")), "max"]],
       where: { id_user: id },
       raw: true,
     });
+
+    if (sesi !== undefined) {
+      const inference = await Hasil.findAll({
+        attributes: ["a", "a_predikat", "z", "sesi"],
+        where: { id_user: id, sesi: sesi },
+      });
+      return response(res, 200, "Ok Berhasil", { inference });
+    }
 
     const inference = await Hasil.findAll({
       attributes: ["a", "a_predikat", "z", "sesi"],

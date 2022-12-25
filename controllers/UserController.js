@@ -39,6 +39,7 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, salt);
   // const idUser = `201110${Math.ceil(Math.random() * 1000)}`;
   const count = await Users.count();
+
   let idUser =
     (count + 1).toString().length <= 1
       ? `20111000${count + 1}`
@@ -50,19 +51,29 @@ const register = async (req, res) => {
 
   try {
     const user = await Users.findOne({ where: { username } });
+    const userById = await Users.findOne({ where: { id: idUser } });
 
     if (user === null) {
-      Users.create({
-        id: idUser,
-        nama_user: nama,
-        username: username,
-        password: hashPassword,
-        user_level: req.query.level ? req.query.level : "user",
-      });
-
+      if (userById === null) {
+        Users.create({
+          id: idUser,
+          nama_user: nama,
+          username: username,
+          password: hashPassword,
+          user_level: req.query.level ? req.query.level : "user",
+        });
+      } else {
+        Users.create({
+          id: idUser + Math.floor(Math.random()),
+          nama_user: nama,
+          username: username,
+          password: hashPassword,
+          user_level: req.query.level ? req.query.level : "user",
+        });
+      }
       return response(res, 200, "Register berhasil");
     } else {
-      return response(res, 400, "Username sudah digunakan");
+      return response(res, 400, "Username/ID sudah digunakan");
     }
   } catch (err) {
     return response(res, 400, "Register gagal");
