@@ -11,7 +11,7 @@ const TokenVerify = (req, res, next) => {
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return response(res, 403, "Invalid token");
+      return response(res, 403, err.message);
     }
 
     req.username = decoded.username;

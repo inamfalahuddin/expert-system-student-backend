@@ -35,13 +35,13 @@ const router = express.Router();
 
 // user
 router.get("/", welcome);
-router.get("/users", getUsers); // need token
+router.get("/users", TokenVerify, getUsers); // need token
 router.get("/user/token", RefreshToken);
 router.post("/user/register", register);
 router.post("/user/login", login);
 router.delete("/user/logout", logout);
-router.delete("/user/:id", deleteUser);
-router.put("/user/:id", updateUser);
+router.delete("/user/:id", TokenVerify, deleteUser);
+router.put("/user/:id", TokenVerify, updateUser);
 router.get("/user/result", TokenVerify, stress);
 
 // quiz
@@ -51,18 +51,18 @@ router.get("/quiz/answers", TokenVerify, getAnswer);
 router.get("/quiz/inference", getResult);
 
 // dimensi
-router.get("/dimensi", getDimensi);
-router.post("/dimensi", addDimensi);
-router.put("/dimensi/:id", updateDimensi);
-router.delete("/dimensi/:id", deleteDimensi);
+router.get("/dimensi", TokenVerify, getDimensi);
+router.post("/dimensi", TokenVerify, addDimensi);
+router.put("/dimensi/:id", TokenVerify, updateDimensi);
+router.delete("/dimensi/:id", TokenVerify, deleteDimensi);
 
 // konsultasi
-router.get("/konsultasi", getKonsultasi);
-router.post("/konsultasi", addKonsultasi);
-router.put("/konsultasi/:id/:sesi", updateKonsultasi);
-router.delete("/konsultasi/:id/", deleteKonsultasi);
+router.get("/konsultasi", TokenVerify, getKonsultasi);
+router.post("/konsultasi", TokenVerify, addKonsultasi);
+router.put("/konsultasi/:id/:sesi", TokenVerify, updateKonsultasi);
+router.delete("/konsultasi/:id/", TokenVerify, deleteKonsultasi);
 
 // hasil
-router.get("/result", getHasilKonsultasi);
+router.get("/result", TokenVerify, getHasilKonsultasi);
 
 module.exports = router;
