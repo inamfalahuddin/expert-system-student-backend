@@ -12,7 +12,7 @@ dotenv.config();
 app.use(
   cors({
     credentials: true,
-    origin: "http://192.168.18.253:3000",
+    origin: `http://${process.env.HOST}:3000`,
     // exposedHeaders: ["set-cookie"],
   })
 );

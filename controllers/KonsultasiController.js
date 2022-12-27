@@ -128,15 +128,35 @@ const updateKonsultasi = async (req, res) => {
 };
 
 const deleteKonsultasi = async (req, res) => {
-  const checkDataFromDB = await Konsultasi.findAll({
-    where: { id_konsultasi: `${req.params.id}` },
-  });
+  try {
+    const checkUserIsExist = await Konsultasi.findOne({
+      attributes: ["id_user", "id_konsultasi", "sesi"],
+      where: { id_user: req.query.id, sesi: req.query.sesi },
+    });
 
-  if (checkDataFromDB.length !== 0) {
-    await Konsultasi.destroy({ where: { id_konsultasi: req.params.id } });
-    return response(res, 200, `Konsultasi ${req.params.id} berhasil dihapus`);
+    // console.log(checkUserIsExist);
+    if (checkUserIsExist !== null) {
+      await Konsultasi.destroy({
+        where: { id_user: req.query.id, sesi: req.query.sesi },
+      });
+
+      return response(res, 200, "delete success");
+    }
+
+    return response(res, 404, "User Not Found");
+  } catch (err) {
+    return response(res, 500, "Server Error");
   }
-  return response(res, 404, `Tidak ada data dengan ID ${req.params.id}`);
+
+  // const checkDataFromDB = await Konsultasi.findAll({
+  //   where: { id_konsultasi: `${req.params.id}` },
+  // });
+
+  // if (checkDataFromDB.length !== 0) {
+  //   await Konsultasi.destroy({ where: { id_konsultasi: req.params.id } });
+  //   return response(res, 200, `Konsultasi ${req.params.id} berhasil dihapus`);
+  // }
+  // return response(res, 404, `Tidak ada data dengan ID ${req.params.id}`);
 };
 
 module.exports = {

@@ -17,7 +17,10 @@ const {
   getAnswer,
   getResult,
 } = require("../controllers/QuizController.js");
-const { getHasilKonsultasi } = require("../controllers/ResultController.js");
+const {
+  getHasilKonsultasi,
+  deleteHasilKonsultasi,
+} = require("../controllers/ResultController.js");
 const RefreshToken = require("../controllers/TokenController.js");
 const {
   getUsers,
@@ -64,5 +67,6 @@ router.delete("/konsultasi/:id/", TokenVerify, deleteKonsultasi);
 
 // hasil
 router.get("/result", TokenVerify, getHasilKonsultasi);
+router.delete("/result", deleteHasilKonsultasi);
 
 module.exports = router;

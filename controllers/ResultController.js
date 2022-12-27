@@ -1,5 +1,6 @@
 const { QueryTypes } = require("sequelize");
 const db = require("../config/db");
+const { KonsultasiHasilDetail } = require("../models/KonsultasiHasilDetail");
 const response = require("./response");
 
 const getHasilKonsultasi = async (req, res) => {
@@ -7,6 +8,23 @@ const getHasilKonsultasi = async (req, res) => {
     // if(req.query.recent)
     if (Object.keys(req.query).length > 0) {
       if (req.query.id !== undefined) {
+        if (req.query.sesi) {
+          console.log(req.query);
+          const result = await db.query(
+            `
+                  SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
+                  FROM tbl_konsultasi_hasildetail as a
+                  LEFT JOIN tbl_users as b ON a.id_user=b.id
+                  LEFT JOIN tbl_tingkat_stres as c ON a.id_tingkat_stres=c.id_tingkat_stres
+                  WHERE a.id_user=${req.query.id} AND a.sesi=${req.query.sesi}
+              `,
+            {
+              type: QueryTypes.SELECT,
+            }
+          );
+          return response(res, 200, "Success", result);
+        }
+
         const result = await db.query(
           `
                 SELECT a.id_konsultasi_hasildetail, a.id_user, b.nama_user, a.z_score_total, a.sesi, c.id_tingkat_stres, c.tingkat_stres
@@ -17,12 +35,12 @@ const getHasilKonsultasi = async (req, res) => {
             `,
           {
             type: QueryTypes.SELECT,
-            where: { id_user: `${req.query.id}` },
           }
         );
 
         return response(res, 200, "Success", result);
       }
+
       if (req.query.recent !== undefined) {
         const result = await db.query(
           `
@@ -78,6 +96,28 @@ const getHasilKonsultasi = async (req, res) => {
   } catch (err) {
     console.log(err);
     return response(res, 500, "Internal Server Error");
+  }
+};
+
+const deleteHasilKonsultasi = async (req, res) => {
+  try {
+    const checkUserIsExist = await KonsultasiHasilDetail.findOne({
+      attributes: ["id_user", "id_konsultasi_hasildetail", "sesi"],
+      where: { id_user: req.query.id, sesi: req.query.sesi },
+    });
+
+    // console.log(checkUserIsExist);
+    if (checkUserIsExist !== null) {
+      await KonsultasiHasilDetail.destroy({
+        where: { id_user: req.query.id, sesi: req.query.sesi },
+      });
+
+      return response(res, 200, "delete success");
+    }
+
+    return response(res, 404, "User Not Found");
+  } catch (err) {
+    return response(res, 500, "Server Error");
   }
 };
 
@@ -149,4 +189,5 @@ const getHasilKonsultasi = async (req, res) => {
 
 module.exports = {
   getHasilKonsultasi,
+  deleteHasilKonsultasi,
 };
