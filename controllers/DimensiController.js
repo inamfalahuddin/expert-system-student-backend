@@ -1,6 +1,7 @@
 const { QueryTypes } = require("sequelize");
 const db = require("../config/db");
 const Dimensi = require("../models/DimensiModel");
+const Keanggotaan = require("../models/KeanggotaanModel");
 const response = require("./response");
 
 const getDimensi = async (req, res) => {
@@ -76,8 +77,21 @@ const updateDimensi = async (req, res) => {
 
     if (checkDataFromDB.length !== 0) {
       await Dimensi.update(
-        { nama_dimensi: req.body.nama_dimensi },
+        {
+          nama_dimensi: req.body.nama_dimensi,
+        },
         { where: { id_dimensi: `${req.params.id}` } }
+      );
+
+      await Keanggotaan.update(
+        {
+          batas_bawah: req.body.batas_bawah,
+          batas_tengah: req.body.batas_tengah,
+          batas_atas: req.body.batas_atas,
+        },
+        {
+          where: { id_dimensi: `${req.params.id}` },
+        }
       );
       return response(res, 200, `Dimensi ${req.params.id} berhasil diperbarui`);
     }
