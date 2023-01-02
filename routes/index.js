@@ -21,6 +21,7 @@ const {
   getHasilKonsultasi,
   deleteHasilKonsultasi,
 } = require("../controllers/ResultController.js");
+const { getTingkatStres } = require("../controllers/StresController.js");
 const RefreshToken = require("../controllers/TokenController.js");
 const {
   getUsers,
@@ -68,5 +69,8 @@ router.delete("/konsultasi/:id/", TokenVerify, deleteKonsultasi);
 // hasil
 router.get("/result", TokenVerify, getHasilKonsultasi);
 router.delete("/result", deleteHasilKonsultasi);
+
+// Tingkat stress
+router.get("/stres", getTingkatStres);
 
 module.exports = router;

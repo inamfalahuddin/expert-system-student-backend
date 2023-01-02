@@ -2,24 +2,27 @@ const { TingkatStres } = require("../data/rule-base");
 const Keanggotaan = require("../models/KeanggotaanModel");
 
 const ruleBased = async () => {
-  let dimensi = [];
-
-  const rule = await Keanggotaan.findAll({
-    attributes: ["id_dimensi", "batas_bawah", "batas_tengah", "batas_atas"],
-  });
-
-  rule.map((val) => {
-    dimensi.push({
-      dimensi: val.id_dimensi,
-      himpunan: {
-        ringan: [val.batas_bawah, val.batas_tengah],
-        sedang: [val.batas_bawah, val.batas_tengah, val.batas_atas],
-        berat: [val.batas_tengah, val.batas_atas],
-      },
+  try {
+    let dimensi = [];
+    const rule = await Keanggotaan.findAll({
+      attributes: ["id_dimensi", "batas_bawah", "batas_tengah", "batas_atas"],
     });
-  });
 
-  return dimensi;
+    rule.map((val) => {
+      dimensi.push({
+        dimensi: val.id_dimensi,
+        himpunan: {
+          ringan: [val.batas_bawah, val.batas_tengah],
+          sedang: [val.batas_bawah, val.batas_tengah, val.batas_atas],
+          berat: [val.batas_tengah, val.batas_atas],
+        },
+      });
+    });
+
+    return dimensi;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const ringan = (x, low, high) => {
